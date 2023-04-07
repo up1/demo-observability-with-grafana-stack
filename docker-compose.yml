@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  demo-service:
+    build:
+      context: ./agent
+    ports:
+      - "8080:8080"
+    environment:
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4317
+      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://tempo:4317
+      - OTEL_EXPORTER_OTLP_INSECURE=true
+      - OTEL_RESOURCE_ATTRIBUTES=service.name=demo
+      - JAVA_OPTS=-javaagent:/app/opentelemetry-javaagent.jar
+
+  tempo:
+        image: grafana/tempo
+        command: [ "-config.file=/etc/tempo.yaml" ]
+        volumes:
+          - ./tempo/tempo-local.yaml:/etc/tempo.yaml
+        ports:
+          - "14268:14268"  # jaeger ingest
+          - "3200:3200"   # tempo
+          - "4317:4317"  # otlp grpc
+          - "4318:4318"  # otlp http
+          - "9411:9411"   # zipkin
+
+
+  grafana:
+    image: grafana/grafana
+    volumes:
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    ports:
+      - "3000:3000"
