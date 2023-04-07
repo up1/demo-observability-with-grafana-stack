@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: demo
+  output.ansi.enabled: ALWAYS
+
+management:
+  endpoints.web.exposure.include: '*'
+  metrics.distribution.percentiles-histogram.http.server.requests: true
+  tracing.sampling.probability: 1.0
+
+logging.pattern.console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(%5p [${spring.application.name:}, trace_id=%X{traceId:-} span_id=%X{spanId:-}]){yellow} %clr(:){red} %clr(%m){faint}%n"
