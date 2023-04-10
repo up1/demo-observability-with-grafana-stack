@@ -2,6 +2,7 @@ version: "3.8"
 
 services:
   demo-service:
+    image: somkiat/service1
     build:
       context: ./agent
     ports:
@@ -15,6 +16,7 @@ services:
       - JAVA_OPTS=-javaagent:/app/opentelemetry-javaagent.jar
 
   target-service:
+    image: somkiat/service2
     build:
       context: ./agent
       dockerfile: Dockerfile_service2
